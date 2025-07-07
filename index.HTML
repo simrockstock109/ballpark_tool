@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Calculator</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom style for selected tier */
+        .tier-box.selected, .tier-box-rev.selected {
+            border-color: #4f46e5; /* indigo-600 */
+            background-color: #eef2ff; /* indigo-50 */
+            color: #4338ca; /* indigo-700 */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen py-12">
+
+    <div class="w-full max-w-md mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+        
+        <!-- FORWARD CALCULATOR -->
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800 text-center mb-6">Suggested Payment Calculator</h1>
+
+            <!-- Price Input Section -->
+            <div class="mb-4">
+                <label for="priceInput" class="block text-sm font-medium text-gray-700 mb-2">Enter Price</label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input type="number" name="price" id="priceInput" class="block w-full rounded-md border-gray-300 pl-7 pr-12 py-4 text-xl focus:border-indigo-500 focus:ring-indigo-500" placeholder="0.00" oninput="calculate()">
+                </div>
+            </div>
+
+            <!-- Money Down Input Section -->
+            <div class="mb-6">
+                <label for="moneyDownInput" class="block text-sm font-medium text-gray-700 mb-2">Money Down</label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input type="number" name="moneyDown" id="moneyDownInput" class="block w-full rounded-md border-gray-300 pl-7 pr-12 py-4 text-xl focus:border-indigo-500 focus:ring-indigo-500" placeholder="0.00" oninput="calculate()">
+                </div>
+            </div>
+
+            <!-- Credit Tier Section -->
+            <div class="mb-8">
+                <h2 class="text-sm font-medium text-gray-700 mb-2">Select Credit Tier</h2>
+                <div class="grid grid-cols-3 gap-3">
+                    <div id="tier-high" class="tier-box cursor-pointer rounded-lg border-2 border-gray-300 bg-white p-4 text-center transition-all duration-200" onclick="selectTier('high')">
+                        <h3 class="font-semibold text-gray-800">High Tier</h3>
+                    </div>
+                    <div id="tier-mid" class="tier-box cursor-pointer rounded-lg border-2 border-gray-300 bg-white p-4 text-center transition-all duration-200" onclick="selectTier('mid')">
+                        <h3 class="font-semibold text-gray-800">Mid Tier</h3>
+                    </div>
+                    <div id="tier-low" class="tier-box cursor-pointer rounded-lg border-2 border-gray-300 bg-white p-4 text-center transition-all duration-200" onclick="selectTier('low')">
+                        <h3 class="font-semibold text-gray-800">Low Tier</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Result Display Section -->
+            <div class="bg-indigo-50 rounded-lg p-6 text-center">
+                <h2 class="text-base font-medium text-indigo-800 mb-2">Suggested Payment Range</h2>
+                <p id="result" class="text-4xl font-bold text-indigo-900 tracking-tight">$0 - $0</p>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="my-10 border-gray-200">
+
+        <!-- REVERSE CALCULATOR -->
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800 text-center mb-6">Vehicle Price Calculator</h1>
+
+            <!-- Target Payment Input Section -->
+            <div class="mb-4">
+                <label for="targetPaymentInput" class="block text-sm font-medium text-gray-700 mb-2">Enter Target Payment</label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input type="number" name="payment" id="targetPaymentInput" class="block w-full rounded-md border-gray-300 pl-7 pr-12 py-4 text-xl focus:border-indigo-500 focus:ring-indigo-500" placeholder="0.00" oninput="calculateReverse()">
+                </div>
+            </div>
+
+            <!-- Reverse Money Down Input Section -->
+            <div class="mb-6">
+                <label for="moneyDownReverseInput" class="block text-sm font-medium text-gray-700 mb-2">Money Down</label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input type="number" name="moneyDownReverse" id="moneyDownReverseInput" class="block w-full rounded-md border-gray-300 pl-7 pr-12 py-4 text-xl focus:border-indigo-500 focus:ring-indigo-500" placeholder="0.00" oninput="calculateReverse()">
+                </div>
+            </div>
+
+            <!-- Reverse Credit Tier Section -->
+            <div class="mb-8">
+                <h2 class="text-sm font-medium text-gray-700 mb-2">Select Credit Tier</h2>
+                <div class="grid grid-cols-3 gap-3">
+                    <div id="tier-high-rev" class="tier-box-rev cursor-pointer rounded-lg border-2 border-gray-300 bg-white p-4 text-center transition-all duration-200" onclick="selectTierReverse('high')">
+                        <h3 class="font-semibold text-gray-800">High Tier</h3>
+                    </div>
+                    <div id="tier-mid-rev" class="tier-box-rev cursor-pointer rounded-lg border-2 border-gray-300 bg-white p-4 text-center transition-all duration-200" onclick="selectTierReverse('mid')">
+                        <h3 class="font-semibold text-gray-800">Mid Tier</h3>
+                    </div>
+                    <div id="tier-low-rev" class="tier-box-rev cursor-pointer rounded-lg border-2 border-gray-300 bg-white p-4 text-center transition-all duration-200" onclick="selectTierReverse('low')">
+                        <h3 class="font-semibold text-gray-800">Low Tier</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reverse Result Display Section -->
+            <div class="bg-green-50 rounded-lg p-6 text-center">
+                <h2 class="text-base font-medium text-green-800 mb-2">Estimated Price Range</h2>
+                <p id="reverseResult" class="text-4xl font-bold text-green-900 tracking-tight">$0 - $0</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // === STATE MANAGEMENT ===
+        let selectedTier = '';
+        let selectedTierReverse = '';
+
+        // === FORWARD CALCULATOR LOGIC ===
+
+        function selectTier(tier) {
+            selectedTier = tier;
+            document.querySelectorAll('.tier-box').forEach(box => box.classList.remove('selected'));
+            document.getElementById(`tier-${tier}`).classList.add('selected');
+            calculate();
+        }
+
+        function calculate() {
+            const priceInput = document.getElementById('priceInput');
+            const moneyDownInput = document.getElementById('moneyDownInput');
+            const resultElement = document.getElementById('result');
+            let price = parseFloat(priceInput.value) || 0;
+            let moneyDown = parseFloat(moneyDownInput.value) || 0;
+            let financedAmount = Math.max(0, price - moneyDown);
+
+            if (!selectedTier) {
+                resultElement.textContent = "Select a tier";
+                return;
+            }
+
+            let baseCalculation = (financedAmount / 100) * 2;
+            if (selectedTier === 'low') baseCalculation += 200;
+            else if (selectedTier === 'mid') baseCalculation += 85; 
+            else if (selectedTier === 'high') baseCalculation += 60;
+            
+            const lowEnd = baseCalculation - 35;
+            const highEnd = baseCalculation + 35;
+            const roundedLow = Math.ceil(lowEnd / 10) * 10;
+            const roundedHigh = Math.ceil(highEnd / 10) * 10;
+            resultElement.textContent = `$${roundedLow} - $${roundedHigh}`;
+        }
+
+        // === REVERSE CALCULATOR LOGIC ===
+
+        function selectTierReverse(tier) {
+            selectedTierReverse = tier;
+            document.querySelectorAll('.tier-box-rev').forEach(box => box.classList.remove('selected'));
+            document.getElementById(`tier-${tier}-rev`).classList.add('selected');
+            calculateReverse();
+        }
+
+        function calculateReverse() {
+            const targetPaymentInput = document.getElementById('targetPaymentInput');
+            const moneyDownReverseInput = document.getElementById('moneyDownReverseInput');
+            const reverseResultElement = document.getElementById('reverseResult');
+            let targetPayment = parseFloat(targetPaymentInput.value) || 0;
+            let moneyDown = parseFloat(moneyDownReverseInput.value) || 0;
+
+            if (!selectedTierReverse) {
+                reverseResultElement.textContent = "Select a tier";
+                return;
+            }
+            
+            if (targetPayment === 0) {
+                reverseResultElement.textContent = "$0 - $0";
+                return;
+            }
+
+            let tierValue = 0;
+            if (selectedTierReverse === 'low') tierValue = 200;
+            else if (selectedTierReverse === 'mid') tierValue = 85;
+            else if (selectedTierReverse === 'high') tierValue = 60;
+
+            const lowPaymentTarget = targetPayment - 35;
+            const highPaymentTarget = targetPayment + 35;
+            const financedAmountLow = (((lowPaymentTarget - tierValue) / 2) * 100);
+            const financedAmountHigh = (((highPaymentTarget - tierValue) / 2) * 100);
+            const priceLow = financedAmountLow + moneyDown;
+            const priceHigh = financedAmountHigh + moneyDown;
+            const roundedLow = Math.floor(priceLow / 1000) * 1000 - 1;
+            const roundedHigh = (Math.floor(priceHigh / 1000) * 1000 - 1) - 1000;
+            const finalPriceLow = Math.max(0, roundedLow);
+            const finalPriceHigh = Math.max(0, roundedHigh);
+            reverseResultElement.textContent = `$${finalPriceLow} - $${finalPriceHigh}`;
+        }
+
+        // === INITIALIZATION ===
+        window.onload = function() {
+            selectTier('mid');
+            selectTierReverse('mid');
+        };
+    </script>
+
+</body>
+</html>
